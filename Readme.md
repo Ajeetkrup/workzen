@@ -1,25 +1,23 @@
-🚀 WorkZen – Corporate Room Booking & Monitoring System
+# 🚀 WorkZen – Corporate Room Booking & Monitoring System
 
 A microservice-based web application to manage room bookings for corporate employees, with built-in observability using Prometheus and Grafana.
-📜 Project Description
+
+## 📜 Project Description
 
 WorkZen helps employees easily book meeting rooms, check availability, and manage schedules. This application is built with a microservice approach — a Node.js + Express backend, a React frontend, and a MongoDB database, all containerized and deployed on Kubernetes (Kind) with Prometheus and Grafana for monitoring.
-✨ Features
 
-    🏢 Room Management
+## ✨ Features
 
-    📅 Booking Management
+- 🏢 Room Management
+- 📅 Booking Management  
+- 🔍 API Health Monitoring
+- 📊 Performance Observability (CPU, memory, HTTP requests)
+- ✅ Kubernetes Deployment (using Kind for local clusters)
+- 🔥 Real-time dashboards with Grafana
 
-    🔍 API Health Monitoring
+## 🏗️ Architecture
 
-    📊 Performance Observability (CPU, memory, HTTP requests)
-
-    ✅ Kubernetes Deployment (using Kind for local clusters)
-
-    🔥 Real-time dashboards with Grafana
-
-🏗️ Architecture
-
+```
                        +------------------+
                        |    Frontend      | (NodePort :31000)
                        +--------+---------+
@@ -43,167 +41,220 @@ WorkZen helps employees easily book meeting rooms, check availability, and manag
          |         |                                                  |
          |         v                                                  |
          |   +-------------+                                          |
-         |   |   Grafana    | (NodePort :32000)                      |
+         |   |   Grafana    | (NodePort :32001)                      |
          |   +-------------+                                          |
          +------------------------------------------------------------+
+```
 
-🧰 Tech Stack
+## 🧰 Tech Stack
 
-    Frontend: React.js, Axios, TailwindCSS
+- **Frontend**: React.js, Axios, TailwindCSS
+- **Backend**: Node.js, Express, Prom-client (metrics)
+- **Database**: MongoDB
+- **Containerization**: Docker
+- **Orchestration**: Kubernetes (Kind for local)
+- **Monitoring**: Prometheus, Grafana
+- **Deployment**: YAML manifests for Deployments, Services, ConfigMaps
 
-    Backend: Node.js, Express, Prom-client (metrics)
+## 📦 Project Structure
 
-    Database: MongoDB
-
-    Containerization: Docker
-
-    Orchestration: Kubernetes (Kind for local)
-
-    Monitoring: Prometheus, Grafana
-
-    Deployment: YAML manifests for Deployments, Services, ConfigMaps
-
-📦 Project Structure
-
+```
 workzen/
 ├── backend/
 │   ├── Dockerfile
-│   ├── deployment.yaml
-│   ├── service.yaml
 │   └── src/
 ├── frontend/
 │   ├── Dockerfile
-│   ├── deployment.yaml
-│   ├── service.yaml
 │   └── src/
 ├── k8s/
 │   ├── namespace.yaml
+│   ├── backend-deployment.yaml
+│   ├── backend-service.yaml
+│   ├── frontend-deployment.yaml
+│   ├── frontend-service.yaml
 │   ├── mongodb-deployment.yaml
 │   ├── mongodb-service.yaml
-│   └── ingress.yaml (optional)
-├── monitoring/
 │   ├── prometheus-deployment.yaml
 │   ├── prometheus-service.yaml
 │   ├── prometheus-config.yaml
 │   ├── grafana-deployment.yaml
 │   ├── grafana-service.yaml
-│   └── grafana-dashboards/ (optional)
+│   └── ingress.yaml (optional)
 └── README.md
+```
 
-🏗️ Setup Instructions
-✅ Step 1: Prerequisites
+## 🏗️ Setup Instructions
 
-    Docker
+### ✅ Step 1: Prerequisites
 
-    Kubernetes (kubectl)
+- Docker
+- Kubernetes (kubectl)
+- Kind (Kubernetes in Docker)
+- DockerHub Account (for image push)
 
-    Kind (Kubernetes in Docker)
+### ✅ Step 2: Create Kind Cluster
 
-    DockerHub Account (for image push)
-
-✅ Step 2: Create Kind Cluster
-
+```bash
 kind create cluster --name workzen
+```
 
-✅ Step 3: Create Namespace
+### ✅ Step 3: Create Namespace
 
+```bash
 kubectl apply -f k8s/namespace.yaml
+```
 
-✅ Step 4: Build Docker Images
+### ✅ Step 4: Build Docker Images
 
-Build backend:
-
+**Build backend:**
+```bash
 docker build -t <dockerhub-username>/workzen-backend ./backend
+```
 
-Build frontend:
-
+**Build frontend:**
+```bash
 docker build -t <dockerhub-username>/workzen-frontend ./frontend
+```
 
-✅ Step 5: Push Images to DockerHub
+### ✅ Step 5: Push Images to DockerHub
 
+```bash
 docker push <dockerhub-username>/workzen-backend
 docker push <dockerhub-username>/workzen-frontend
+```
 
-✅ Step 6: Deploy MongoDB
+### ✅ Step 6: Deploy MongoDB
 
+```bash
 kubectl apply -f k8s/mongodb-deployment.yaml
 kubectl apply -f k8s/mongodb-service.yaml
+```
 
-✅ Step 7: Deploy Backend
+### ✅ Step 7: Deploy Backend
 
-kubectl apply -f backend/deployment.yaml
-kubectl apply -f backend/service.yaml
+```bash
+kubectl apply -f k8s/backend-deployment.yaml
+kubectl apply -f k8s/backend-service.yaml
+```
 
-✅ Step 8: Deploy Frontend
+### ✅ Step 8: Deploy Frontend
 
-kubectl apply -f frontend/deployment.yaml
-kubectl apply -f frontend/service.yaml
+```bash
+kubectl apply -f k8s/frontend-deployment.yaml
+kubectl apply -f k8s/frontend-service.yaml
+```
 
-✅ Step 9: Deploy Monitoring Stack
+### ✅ Step 9: Deploy Monitoring Stack
 
-kubectl apply -f monitoring/prometheus-config.yaml
-kubectl apply -f monitoring/prometheus-deployment.yaml
-kubectl apply -f monitoring/prometheus-service.yaml
+```bash
+kubectl apply -f k8s/prometheus-config.yaml
+kubectl apply -f k8s/prometheus-deployment.yaml
+kubectl apply -f k8s/prometheus-service.yaml
 
-kubectl apply -f monitoring/grafana-deployment.yaml
-kubectl apply -f monitoring/grafana-service.yaml
+kubectl apply -f k8s/grafana-deployment.yaml
+kubectl apply -f k8s/grafana-service.yaml
+```
 
-🌐 Access Services
-Service	URL	NodePort
-Frontend	http://localhost:31000	31000
-Backend API	http://localhost:30000/health	30000
-Prometheus	http://localhost:32000	32000
-Grafana	http://localhost:33000	33000
-🔑 Grafana Credentials
+## 🌐 Access Services
 
-    Username: admin
+| Service | URL | NodePort |
+|---------|-----|----------|
+| Frontend | http://localhost:31000 | 31000 |
+| Backend API | http://localhost:30000/health | 30000 |
+| Prometheus | http://localhost:32000 | 32000 |
+| Grafana | http://localhost:33000 | 32001 |
 
-    Password: admin (or as set in deployment)
+## 🔑 Grafana Credentials
 
-📈 Setup Grafana Dashboards
+- **Username**: admin
+- **Password**: admin (or as set in deployment)
 
-    Open Grafana at http://localhost:33000
+## 📈 Setup Grafana Dashboards
 
-    Add Data Source → Prometheus → URL: http://prometheus.monitoring.svc.cluster.local:9090
+1. Open Grafana at http://localhost:32001
+2. Add Data Source → Prometheus → URL: `http://prometheus:9090`
+3. Import dashboards manually or create custom dashboards
 
-    Import dashboards manually or from grafana-dashboards/ (optional).
+> **Key Fix**: Use simple service name `prometheus:9090` instead of FQDN since both services are in the same `workzen` namespace!
 
-🔍 Prometheus Target Config Example
+## 🔍 Prometheus Target Config Example
 
+```yaml
 scrape_configs:
   - job_name: 'backend'
     static_configs:
-      - targets: ['backend.workzen.svc.cluster.local:8000']
+      - targets: ['backend:8000']  # Simple service name - same namespace
+```
 
-🧠 Common Debug Commands
+## 🧠 Common Debug Commands
 
-Check pods:
-
+**Check pods:**
+```bash
 kubectl get pods -n workzen
+```
 
-Check services:
-
+**Check services:**
+```bash
 kubectl get svc -n workzen
+```
 
-Check logs:
-
+**Check logs:**
+```bash
 kubectl logs <pod-name> -n workzen
+```
 
-Check Prometheus targets:
-
+**Check Prometheus targets:**
+```bash
 http://localhost:32000/targets
+```
 
-Check endpoints:
-
+**Check endpoints:**
+```bash
 kubectl get endpoints backend -n workzen
+```
 
-🧽 Tear Down Cluster
+## 🧽 Tear Down Cluster
 
+```bash
 kind delete cluster --name workzen
+```
 
-📜 License
+## 📊 Available Metrics
+
+Your Node.js backend exposes these metrics for monitoring:
+
+- **Process Metrics**: CPU usage, memory consumption, file descriptors
+- **Node.js Metrics**: Event loop lag, heap usage, garbage collection
+- **HTTP Metrics**: Request duration, request rate, response codes
+- **Custom Metrics**: Application-specific business metrics
+
+## 🎯 Monitoring Queries Examples
+
+```promql
+# CPU Usage Rate
+rate(process_cpu_seconds_total[5m]) * 100
+
+# Memory Usage (MB)
+process_resident_memory_bytes / 1024 / 1024
+
+# Event Loop Lag (ms)
+nodejs_eventloop_lag_p99_seconds * 1000
+
+# HTTP Request Rate
+rate(http_request_duration_seconds_count[5m])
+
+# Average Response Time
+rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])
+```
+
+## 📜 License
 
 MIT License — Free to use, modify, and distribute.
-🚀 Author
 
-Made with ❤️ by Ajeet Upadhyay
+## 🚀 Author
+
+Made with ❤️ by **Ajeet Upadhyay**
+
+---
+
+⭐ **Star this repo** if you found it helpful!
